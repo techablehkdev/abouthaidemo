@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="point_of_sale_portal" model="ir.actions.client">
+        <field name="name">Point of Sale Portal</field>
+        <field name="tag">PointOfSalePortal</field>
+        <field name="target">fullscreen</field>
+    </record>
+
+    <menuitem id="menu_point_root_portal"
+              name="POS Portal"
+              groups="point_of_sale.group_pos_manager,point_of_sale.group_pos_user"
+              web_icon="point_of_sale,static/description/icon.png"
+              sequence="19"/>
+
+    <menuitem id="menu_point_of_sale_portal"
+              action="point_of_sale_portal"
+              name="Portal"
+              parent="menu_point_root_portal"
+              sequence="10"/>
+
+</odoo>

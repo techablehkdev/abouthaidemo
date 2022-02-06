@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="GiftCardDetail" owl="1">
+        <t t-set="card" t-value="props.card"/>
+        <section class='client-details edit'
+                 style="max-height: 400px;min-height: 300px;height: fit-content;">
+            <div class="header">
+                <button t-on-click.stop="trigger('actionPrint')">
+                    <i class="fa fa-print"/>
+                    <span> </span>
+                    <t t-if="!env.isMobile">Print</t>
+                </button>
+                <button t-att-class="{'highlight': state.change}"
+                        t-if="state.change"
+                        t-on-click.stop="trigger('saveChange')">
+                    <i class="fa fa-save"/>
+                    <span> </span>
+                    <t t-if="!env.isMobile">Save Changes</t>
+                </button>
+                <button t-att-class="{'highlight': props.card.balance != 0}"
+                        t-if="props.card.balance != 0"
+                        t-on-click.stop="trigger('addGiftToOrder')">
+                    <i class="fa fa-plus"/>
+                    <span> </span>
+                    <t t-if="!env.isMobile">Add to Order</t>
+                </button>
+            </div>
+            <div class="client-picture">
+                <t t-if="partnerImageUrl">
+                    <img t-att-src="partnerImageUrl" alt="Partner"
+                         style="width: 64px; height: 64px; object-fit: cover;"/>
+                </t>
+            </div>
+            <div class='client-details-box clearfix'>
+                <div class='client-details-left'>
+                    <t t-if="card.partner_id">
+                        <div class='client-detail'>
+                            <span class='label'>Customer</span>
+                            <t t-esc="card.partner_id[1]"/>
+                        </div>
+                    </t>
+                    <div class='client-detail'>
+                        <span class='label'>Name</span>
+                        <input class="detail"
+                               t-on-change="OnChange"
+                               t-att-value='card.name'
+                               name="name"/>
+                    </div>
+                    <div class='client-detail'>
+                        <span class='label'>Code</span>
+                        <input class="detail"
+                               t-on-change="OnChange"
+                               t-att-value='card.code'
+                               name="code"/>
+                    </div>
+                    <div class="client-detail">
+                        <label class='label'>Expired Date: <t t-esc="card.expired_date"/> </label>
+                        <input class="detail"
+                               type="date"
+                               t-on-change="OnChange"
+                               t-att-value='card.expired_date'
+                               name="expired_date"/>
+                    </div>
+                </div>
+                <div class='client-details-right'>
+                    <div class='client-detail'>
+                        <span class='label'>State</span>
+                        <span style="color: #6EC89B">
+                            <t t-if="card.state == 'valid'">Valid</t>
+                            <t t-if="card.state == 'expired'">valid</t>
+                        </span>
+                    </div>
+                    <div class='client-detail'>
+                        <span class='label'>Amount :<t t-esc='env.pos.format_currency(card.initial_amount)'/></span>
+                        <input class="detail"
+                               type="number"
+                               t-on-change="OnChange"
+                               t-att-value='card.initial_amount'
+                               name="initial_amount"/>
+                    </div>
+                    <div class='client-detail'>
+                        <span class='label'>Balance</span>
+                        <t t-esc='env.pos.format_currency(card.balance)'/>
+                    </div>
+                </div>
+            </div>
+            <div class='client-details-box clearfix'>
+                <div class='client-detail' style="width: 45%; float: left"
+                     t-if="props.card.redeemPosLines">
+                    <span class='label'>Redeem POS</span>
+                    <div class='lines_detail'>
+                        <GiftCardRedeemPosLines lines="props.card.redeemPosLines"/>
+                    </div>
+                </div>
+                <div class='client-detail' style="width: 45%; float: right"
+                     t-if="props.card.redeemSaleLines">
+                    <span class='label'>Redeem Sale</span>
+                    <div class='lines_detail'>
+                        <GiftCardRedeemSaleLines lines="props.card.redeemSaleLines"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+
+</templates>

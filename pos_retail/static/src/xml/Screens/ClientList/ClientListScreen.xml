@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ClientListScreen" t-inherit="point_of_sale.ClientListScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('button')][3]" position="replace">
+            <div class="button save" t-if="state.detailIsShown" t-on-click="trigger('click-save')">
+                <t t-if="!env.isMobile">
+                    <i class="fa fa-floppy-o"/>
+                    <span> Save</span>
+                </t>
+                <t t-else="">
+                    <i class="fa fa-floppy-o"/>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('searchbox-client')]//input" position="attributes">
+            <attribute name="t-model">state.query</attribute>
+        </xpath>
+
+        <xpath expr="//div[hasclass('searchbox-client')]" position="after">
+            <div class="top-content-center" t-if="props.body and !env.isMobile">
+                <h1 class="total-value"><t t-esc="props.body"/></h1>
+            </div>
+            <div class="button save" t-on-click="trigger('clear-search')" t-if="!state.detailIsShown">
+                <t t-if="!env.isMobile">
+                    <i class="fa fa-refresh"/>
+                    <span> Clear Search</span>
+                </t>
+                <t t-else="">
+                    <i class="fa fa-refresh"/>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//span[hasclass('search-clear-client')]" position="after">
+            <span class="shortcut-keyboard" t-if="!env.isMobile and env.isShowKeyBoard">
+                <i class="fa fa-keyboard-o"/>
+                (B or ESC): Back Screen -
+                (Arrow Up/Down): Up/Down Select Customer -
+                (Enter): Set/DeSelected Customer -
+                (Any another key): Auto focus to Search Box
+            </span>
+        </xpath>
+        <xpath expr="//div[hasclass('back')]" position="inside">
+            <t t-if="!env.isMobile">
+                <span>  </span>
+                <i class="fa fa-keyboard-o"/>B / ESC
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('top-content')]" position="inside">
+            <t t-if="!env.isMobile" style="color: #fff">
+                <span>  </span>
+                <i class="fa fa-keyboard-o"/>Enter
+            </t>
+        </xpath>
+        <xpath expr="//section[hasclass('list')]" position="replace">
+            <table class='summary-table' t-if="!state.detailIsShown and clients.length != 0">
+                <colgroup>
+                    <col width='3%'/>
+                    <col width='27%'/>
+                    <col width='20%'/>
+                    <col width='10%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%'/>
+                    <col width='5%' t-if="env.pos.config.pos_orders_management"/>
+                    <col width='5%' t-if="env.pos.config.archive_client"/>
+                </colgroup>
+                <tr class="receipt-line">
+                    <td style="text-align: center">
+                        No.
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('display_name', false)">
+                        Name
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('address', false)">
+                        Address
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('phone', false)">
+                        Phone
+                    </td>
+                    <th class="client-line-email" style="text-align: center; color: blue" t-on-click.stop="_sortField('email', false)">
+                        Email
+                    </th>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('barcode', false)">
+                        Barcode
+                    </td>
+                    <td style="text-align: center">
+                        Parent
+                    </td>
+                    <td style="text-align: center">
+                        Type
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('pos_loyalty_point', true)">
+                        Loyalty Points
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('balance', true)">
+                        Credit Balance
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('wallet', true)">
+                        Wallet Amount
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('pos_order_count', true)">
+                        Orders Count
+                    </td>
+                    <td style="text-align: center; color: blue" t-on-click.stop="_sortField('pos_total_amount', true)">
+                        Purchase Amount
+                    </td>
+                    <td style="text-align: center" t-if="env.pos.config.pos_orders_management">
+                        Orders
+                    </td>
+                    <td style="text-align: center" t-if="env.pos.config.archive_client">
+
+                    </td>
+                    <th class="client-line-last-column-placeholder oe_invisible"></th>
+                </tr>
+                <t t-set="number" t-value="1"/>
+                <t t-foreach="clients" t-as="partner"
+                   t-key="partner.id">
+                    <ClientLine partner="partner"
+                                number="number"
+                                selectedClient="state.selectedClient"
+                                detailIsShown="state.detailIsShown"
+                                t-on-click-client="clickClient"/>
+                    <t t-set="number" t-value="number +1"/>
+                </t>
+            </table>
+        </xpath>
+    </t>
+
+</templates>

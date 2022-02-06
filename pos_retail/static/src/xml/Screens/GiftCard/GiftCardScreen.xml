@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="GiftCardScreen" owl="1">
+        <div class="ticket-screen screen" t-on-activate-edit-mode="activateEditMode">
+            <div class="screen-content">
+                <div class="controls">
+                    <div class="buttons">
+                        <button class="highlight" t-on-click="back">
+                            <i class="fa fa-chevron-left"></i>
+                            <t t-if="!env.isMobile"> Back</t>
+                        </button>
+                    </div>
+                    <SearchBar automaticSearchOrder="true" t-if="!state.detailIsShown" config="searchBarConfig" placeholder="'Search Card...'"/>
+                    <button class="button-right" t-on-click="clearSearch">
+                        <i class="fa fa-refresh "></i>
+                        <t t-if="props.selectedClient">
+                            Cards of <t t-esc="props.selectedClient.display_name"/>
+                        </t>
+                        <t t-else="">
+                            All Cards
+                        </t>
+                    </button>
+                </div>
+                <div t-if="state.detailIsShown" class="client-details-contents subwindow-container-fix">
+                    <GiftCardDetail card="state.editModeProps.card" t-props="state.editModeProps"/>
+                    <!-- TODO: when props change, SaleOrderDetail will change, It reason we call t-props
+                    -->
+                </div>
+                <table class='summary-table' t-if="getCards and getCards.length != 0">
+                    <colgroup>
+                        <col width='5%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='20%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                        <col width='10%'/>
+                    </colgroup>
+                    <tr class="receipt-line">
+                        <td style="text-align: center">
+                            No.
+                        </td>
+                        <td style="text-align: center">
+                            Create Date
+                        </td>
+                        <td style="text-align: center">
+                            Create By
+                        </td>
+                        <td style="text-align: center">
+                            Name
+                        </td>
+                        <td style="text-align: center">
+                            Code
+                        </td>
+                        <td style="text-align: center">
+                            Partner
+                        </td>
+                        <td style="text-align: center">
+                            Amount
+                        </td>
+                        <td style="text-align: center">
+                            Balance
+                        </td>
+                        <td style="text-align: center">
+                            Count Used Time
+                        </td>
+                        <td style="text-align: center">
+                            Expired Date
+                        </td>
+                        <td style="text-align: center">
+                            State
+                        </td>
+                    </tr>
+                    <t t-set="number" t-value="1"/>
+                    <t t-foreach="getCards" t-as="card"
+                       t-key="card.id">
+                        <GiftCardRow card="card"
+                                      number="number"
+                                      t-att-class="{'highlight': getHighlight}"
+                                      selectedCard="state.selectedCard"
+                                      detailIsShown="state.detailIsShown"
+                                      t-on-click-card="clickCard"/> <!-- matching to (1) of PosOrderRow-->
+                        <t t-set="number" t-value="number +1"/>
+                    </t>
+                </table>
+                <t t-else="">
+                    <h1 class="loading-orders">... NOT FOUND ANY CARDS ...</h1>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="pos_retail.portal" name="POS Portal">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <title>Odoo POS</title>
+
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta http-equiv="content-type" content="text/html, charset=utf-8"/>
+
+                <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+
+                <link rel="shortcut icon" sizes="196x196" href="/point_of_sale/static/src/img/touch-icon-196.png"/>
+                <link rel="shortcut icon" sizes="128x128" href="/point_of_sale/static/src/img/touch-icon-128.png"/>
+                <link rel="apple-touch-icon" href="/point_of_sale/static/src/img/touch-icon-iphone.png"/>
+                <link rel="apple-touch-icon" sizes="76x76" href="/point_of_sale/static/src/img/touch-icon-ipad.png"/>
+                <link rel="apple-touch-icon" sizes="120x120"
+                      href="/point_of_sale/static/src/img/touch-icon-iphone-retina.png"/>
+                <link rel="apple-touch-icon" sizes="152x152"
+                      href="/point_of_sale/static/src/img/touch-icon-ipad-retina.png"/>
+
+                <style>body { background: #222; }</style>
+
+                <script type="text/javascript">
+                    var odoo =<t t-raw="json.dumps({
+                        'csrf_token': request.csrf_token(None),
+                        'debug': debug,
+                    })"/>;
+                </script>
+                <t t-call="point_of_sale.assets_common"/>
+                <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
+                <script type="text/javascript" src="/pos_retail/static/src/js/Portal/Portal.js"/>
+                <link rel="stylesheet" type="text/scss" href="/pos_retail/static/src/scss/Portal.scss"/>
+            </head>
+            <body>
+            </body>
+        </html>
+    </template>
+
+    <template id="assets_index" name="index pos ui" inherit_id="point_of_sale.index">
+        <xpath expr="//head" position="inside">
+            <script type="text/javascript" src="/pos_retail/static/src/libs/indexed_db.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/rpc.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/idb-keyval.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/PosIDB.js"/>
+            <link rel="stylesheet" href="/pos_retail/static/src/libs/css/material-dashboard.css"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/jquery-barcode-last.min.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/jquery.validate.min.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/bootstrap-datetimepicker.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/qrcode.min.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/pax.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/quagga.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/jSignature.min.js"/>
+            <script type="text/javascript" src="/pos_retail/static/src/libs/js/jSignature.min.noconflict.js"/>
+            <script type="text/javascript">
+                var odoo =<t t-raw="json.dumps({
+                    'csrf_token': request.csrf_token(None),
+                    'session_info': session_info,
+                    '__session_info__': session_info,
+                    'login_number': login_number,
+                    'debug': debug,
+                    'pos_session_id': pos_session_id,
+                    'proxy_ip': proxy_ip,
+                    'cache': cache
+                })"/>;
+            </script>
+        </xpath>
+    </template>
+
+    <template id="pos_retail.scan_successfully" name="POS Index">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <title>Scan Successfully</title>
+                <script type="text/javascript" src="/pos_retail/static/src/libs/js/qrcode.min.js"/>
+                <style>body { background: #FFFFFF; }</style>
+                <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
+            </head>
+            <body>
+                <div class="successfully_order highlight">
+                    <h1 style="font-size: 50px;text-align: center;text-transform: uppercase;">Successfully Ordered</h1>
+                    <h2 style="font-weight: 900;color: #479b6c;font-size: 40px;text-align: center;text-transform: uppercase;">
+                        SCAN SUCCESSFULLY, ORDER OF CUSTOMER AUTO ADD TO POS SCREEN NOW
+                    </h2>
+                    <div id="qrcode" style="width: 500px; margin: 0 auto"></div>
+                    <script type="text/javascript">
+                        new QRCode(document.getElementById("qrcode"), {
+                        text: window.origin,
+                        width: 500,
+                        height: 500,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                        });
+                    </script>
+                </div>
+            </body>
+        </html>
+    </template>
+
+    <template id="pos_retail.qrcode_order" name="POS Index">&lt;!DOCTYPE html&gt;
+        <html>
+            <head>
+                <title>POS TL Technology</title>
+
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+                <meta http-equiv="content-type" content="text/html, charset=utf-8"/>
+
+                <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+
+                <link rel="shortcut icon" sizes="196x196" href="/point_of_sale/static/src/img/touch-icon-196.png"/>
+                <link rel="shortcut icon" sizes="128x128" href="/point_of_sale/static/src/img/touch-icon-128.png"/>
+                <link rel="apple-touch-icon" href="/point_of_sale/static/src/img/touch-icon-iphone.png"/>
+                <link rel="apple-touch-icon" sizes="76x76" href="/point_of_sale/static/src/img/touch-icon-ipad.png"/>
+                <link rel="apple-touch-icon" sizes="120x120"
+                      href="/point_of_sale/static/src/img/touch-icon-iphone-retina.png"/>
+                <link rel="apple-touch-icon" sizes="152x152"
+                      href="/point_of_sale/static/src/img/touch-icon-ipad-retina.png"/>
+                <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
+
+                <style>body { background: #fff; }</style>
+
+                <link rel="shortcut icon" href="/web/static/src/img/favicon.ico" type="image/x-icon"/>
+            </head>
+            <body>
+                <div class="info">
+                    <h2>Your Order Info</h2>
+                    <t t-if="order">
+                        <t t-foreach="order" t-as="key">
+                            <p>
+                                <t t-esc="key"/>
+                                :
+                                <t t-esc="order[key]"/>
+                            </p>
+                        </t>
+                    </t>
+                </div>
+            </body>
+        </html>
+    </template>
+
+
+</odoo>

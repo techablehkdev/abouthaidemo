@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="OrderCartAction" owl="1">
+        <div class="subpads">
+            <div t-if="itemsInCart">
+                <table class='summary-table' t-if="!env.isMobile and state.screen == 'Products'"
+                       style="width: 100%; display: inline-table; margin-bottom: 5px">
+                <colgroup>
+                    <col width='25%'/>
+                    <col width='20%'/>
+                    <col width='20%'/>
+                    <col width='20%'/>
+                    <col width='15%'/>
+                </colgroup>
+                <tr class="receipt-line" style="cursor: unset">
+                    <td style="text-align: center" class="sub-value">
+                        W/o Taxes: <t t-esc="state.totalWithOutTaxes"/>
+                    </td>
+                        <td style="text-align: center; color: blue; cursor: pointer" class="sub-value"
+                            t-on-click="setDiscount">
+                        Disc: - <t t-esc="state.discount"/>
+                    </td>
+                        <td style="text-align: center; color: blue; cursor: pointer" class="sub-value"
+                            t-on-click="setTaxes">
+                        Taxes: + <t t-esc="state.tax"/>
+                    </td>
+                    <td style="text-align: center">
+                        Items/Qty:
+                        <t t-esc="state.totalItems"/>
+                            <span> / </span>
+                            <t t-esc="state.totalQuantities"/>
+                    </td>
+                    <td style="text-align: center; color: blue; cursor: pointer" t-on-click="trigger('clear-cart')">
+                        Clear Cart
+                        <i class="fa fa-trash"/>
+                            (F3)
+                    </td>
+                </tr>
+            </table>
+                <NumpadWidget activeMode="state.numpadMode"/>
+                <button class="button set-customer"
+                        t-att-class="{
+                            'decentered': isLongName,
+                            'oe_hidden': env.session.restaurant_order or !env.pos.config.allow_customer,
+                            'highlight': isCustomerSet
+                        }"
+                        t-on-click="trigger('click-customer')">
+                    <i class="fa fa-user" role="img" aria-label="Customer" title="Customer"
+                       style="float: left"/>
+                    <span> </span>
+                    <t t-if="client">
+                        <t t-esc="client.name"/>
+                        <t t-if="!env.isMobile">
+                            <span class="shortcut-keyboard">
+                                <i class="fa fa-keyboard-o"/>
+                                C
+                            </span>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        Customers Screen
+                        <t t-if="!env.isMobile">
+                            <span class="shortcut-keyboard">
+                                <i class="fa fa-keyboard-o"/>
+                                C
+                            </span>
+                        </t>
+                    </t>
+                    <i t-if="client and env.pos.config.update_client"
+                       class="fa fa-edit" role="img"
+                       aria-label="Customer" title="Customer"
+                       t-on-click.stop="editCustomer(client)"
+                       style="float: right"/>
+                </button>
+                <button class="button pay"
+                        t-att-class="payButtonClasses"
+                        t-on-click="trigger('click-pay')">
+                    <t t-if="!env.pos.session.restaurant_order">
+                        <t t-if="!env.pos.config.replace_paid_button_to_assign">
+                            <t t-if="payButtonClasses['warning']">
+                                RETURN
+                            </t>
+                            <t t-else="">
+                                PAID
+                            </t>
+                            <span class="total-value">
+                                <t t-esc="state.total"/>
+                            </span>
+                            <span class="shortcut-keyboard" t-if="!env.isMobile">
+                                <i class="fa fa-keyboard-o"/>
+                                (Enter)
+                            </span>
+                        </t>
+                        <t t-else="">
+                            <h1>
+                                ASSIGN ORDER
+                            </h1>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <i class="fa fa-check"/>
+                        PLACE
+                    </t>
+                </button>
+            </div>
+            <div class="pads">
+                <button class="button footer-cart-button"
+                        style="color:#ff5722 !important"
+                        t-att-class="{highlight: props.showButtons}"
+                        t-on-click="trigger('show-buttons')">
+                    <t t-if="!props.showButtons">
+                        <i class="fa fa-th"/>
+                    </t>
+                    <t t-else="">
+                        <i class="fa fa-angle-double-down"/>
+                    </t>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( F1 )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-if="state.screen == 'Products' and env.pos.config.custom_sale and env.pos.config.custom_sale_product_id"
+                        t-on-click="trigger('add-custom-sale')">
+                    <i class="fa fa-plus"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( F2 )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-on-click="trigger('print-receipt')">
+                    <i class="fa fa-print"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( F6 )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-on-click="trigger('quickly-paid')">
+                    <i class="fa fa-bolt"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( F7 )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-on-click="trigger('open-cart')">
+                    <i class="fa fa-angle-double-down" aria-hidden="true"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( o )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-on-click="trigger('remove-selected-order')">
+                    <i class="fa fa-trash"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( r )
+                    </span>
+                </button>
+                <button class="button footer-cart-button"
+                        t-on-click="env.pos.add_new_order()">
+                    <i class="fa fa-plus"/>
+                    <span class="shortcut-keyboard" t-if="!env.isMobile">
+                        <i class="fa fa-keyboard-o"/>
+                        ( n )
+                    </span>
+                </button>
+            </div>
+        </div>
+    </t>
+
+</templates>

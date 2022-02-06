@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="GiftCardRedeemSaleLines" owl="1">
+        <div class="orders">
+            <div class="header-row">
+                <div class="col start">Redeem Date</div>
+                <div class="col start">Order Ref</div>
+                <div class="col end">Amount</div>
+            </div>
+            <t t-foreach='props.lines' t-as='line' t-key="line.id">
+                <div class="order-row pointer">
+                    <div class="col start">
+                        <t t-esc="line.create_date"/>
+                    </div>
+                    <div class="col start">
+                        <t t-esc="line.order_id[1]"/>
+                    </div>
+                    <div class="col end">
+                        <t t-esc="env.pos.format_currency(line.price_total)"/>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

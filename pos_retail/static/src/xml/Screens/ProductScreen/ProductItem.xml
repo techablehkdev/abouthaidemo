@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="RetailProductItem" owl="1">
+        <t t-set="product" t-value="props.product"/>
+        <t t-set="out_stock"
+           t-value="product.qty_available == 0 or !product.qty_available or product.qty_available &lt; 0"/>
+        <t t-if="env.pos.config.product_view == 'list'">
+            <tr class="receipt-line"
+                t-att-class="{
+                        'oe_hidden': disableSale,
+                        'highlight': product.modifiers
+                     }"
+                tabindex="0"
+                t-on-click.stop="trigger('click-product', product)"
+                t-on-mouseover.stop="_autoSyncBackend"
+                t-on-keypress="spaceClickProduct"
+                t-att-data-product-id="product.id"
+                t-attf-aria-labelledby="article_product_{{product.id}}">
+                <td style="text-align: center">
+                    <t t-esc="props.number"/>
+                    <i role="img" aria-label="Info" title="Info" class="product-info-button fa fa-info-circle"
+                       t-on-click.stop="showProductInfo"
+                    />
+                </td>
+                <td style="text-align: center">
+                     <t t-esc="product['id']"/>
+                </td>
+                <td style="text-align: left">
+                    <ProductOnHand product="product" t-if="env.pos.config.display_onhand and product['type'] == 'product'"/>
+                    <ProductName product="product"/>
+                    <span t-if="env.pos.get_count_variant(product.product_tmpl_id) and env.pos.get_count_variant(product.product_tmpl_id).length > 1"
+                          aria-label="Total Variants"
+                          title="Total Variants"
+                          t-on-click.stop="changeVariant"
+                          class="with-badge" t-att-badge="env.pos.get_count_variant(product.product_tmpl_id).length">
+                        <i class="oe_link_icon fa fa-sitemap oe_icon line-icon" aria-hidden="true"></i>
+                    </span>
+                    <ProductCountInCart product="props.product"/>
+                </td>
+                <td style="text-align: center">
+                     <t t-if="product['default_code']">
+                        <t t-esc="product['default_code']"/>
+                    </t>
+                    <t t-else="">
+                        N/A
+                    </t>
+                </td>
+                <td style="text-align: center">
+                     <t t-esc="product['barcode'] or 'N/A'"/>
+                </td>
+                <td style="text-align: center">
+                    <t t-if="product.barcode">
+                        <i t-on-click.stop="printBarcode"
+                           class="oe_link_icon fa fa-print oe_icon line-lot-icon"
+                           aria-label="Print Barcode"
+                           role="img"
+                           title="Print Barcode"
+                        />
+                    </t>
+                    <t t-else="">
+                        <i t-on-click.stop="addBarcode"
+                           class="oe_link_icon fa fa-barcode oe_icon line-lot-icon"
+                           aria-label="Add Barcode"
+                           role="img"
+                           title="Add Barcode"
+                        />
+                    </t>
+                </td>
+                <td style="text-align: center">
+                    <span class="price price-tag">
+                        <t t-esc="price"/>
+                    </span>
+                </td>
+                <td style="text-align: center" t-if="env.pos.config.allow_edit_product and !env.isMobile">
+                    <i t-on-click.stop="editProduct"
+                       class="oe_link_icon fa fa-edit oe_icon line-lot-icon"
+                       aria-label="Modifiers Product"
+                       role="img"
+                       title="Modifiers Product"
+                    />
+                </td>
+                <td style="text-align: center">
+                    <i t-on-click.stop="archiveProduct"
+                       t-if="env.pos.config.allow_remove_product and !env.isMobile"
+                       class="oe_link_icon fa fa-trash oe_icon line-lot-icon"
+                       aria-label="Archive Product"
+                       role="img"
+                       title="Archive Product"
+                    />
+                </td>
+            </tr>
+        </t>
+        <t t-else="">
+            <article class='product'
+                     tabindex="0"
+                     t-att-class="{
+                            'oe_hidden': disableSale,
+                         }"
+                     t-on-keypress="spaceClickProduct"
+                     t-on-click="trigger('click-product', props.product)"
+                     t-on-mouseover.stop="_autoSyncBackend"
+                     t-att-data-product-id="props.product.id"
+                     t-attf-aria-labelledby="article_product_{{props.product.id}}">
+                <div class="product-img" t-if="!env.pos.config.hide_product_image">
+                    <img t-att-src="imageUrl" t-att-alt="props.product.display_name"/>
+                </div>
+                <span class="product_sequence" t-if="product.pos_sequence">
+                    Sequence: <t t-esc="product.pos_sequence"/>
+                </span>
+                <i role="img"
+                   aria-label="Info"
+                   title="Info"
+                   class="product-info-button fa fa-info-circle"
+                   t-on-click.stop="showProductInfo"
+                />
+                <i role="img"
+                   aria-label="Info"
+                   title="Info"
+                   class="edit-product fa fa-edit"
+                   t-if="env.pos.config.allow_edit_product and !env.isMobile"
+                   t-on-click.stop="editProduct"
+                />
+                <span class="price-tag">
+                    <t t-esc="price"/>
+                </span>
+                <div t-if="product.is_combo and !env.isMobile" class="ribbon"><span>Combo Bundle/Pack</span></div>
+                <div t-if="product.is_credit and !env.isMobile" class="ribbon"><span>Credit</span></div>
+                <div t-if="product.multi_uom and !env.isMobile" class="ribbon"><span>Multi Unit</span></div>
+                <div t-if="product.multi_variant and !env.isMobile" class="ribbon"><span>Multi Variants</span></div>
+                <div t-if="product.cross_selling and !env.isMobile" class="ribbon"><span>Cross Selling</span></div>
+                <div t-if="product.is_voucher and !env.isMobile" class="ribbon"><span>Voucher</span></div>
+                <span class="qty-soldout" t-if="env.pos.productsTopSelling and env.pos.productsTopSelling[product.id]">
+                    <i class="fa fa-certificate"
+                       style="background: #6EC89B; color: #fff; padding: 5px; border-radius: 5px; font-size: 16px"/>
+                    <t t-esc="env.pos.productsTopSelling[product.id]"/>
+                </span>
+                <div class="product-name">
+                    <span t-if="env.pos.get_count_variant(product.product_tmpl_id) and env.pos.get_count_variant(product.product_tmpl_id).length > 1"
+                          aria-label="Total Variants"
+                          title="Total Variants"
+                          t-on-click.stop="changeVariant"
+                          class="with-badge" t-att-badge="env.pos.get_count_variant(product.product_tmpl_id).length">
+                        <i class="oe_link_icon fa fa-sitemap oe_icon line-icon" aria-hidden="true"></i>
+                    </span>
+                    <ProductCountInCart product="props.product"/>
+                    <t t-if="env.pos.config.display_product_ref">
+                        <t t-if="product['default_code']">
+                            [<t t-esc="product['default_code']"/>]
+                        </t>
+                        <ProductName product="product"/>
+                        <ProductOnHand product="product" t-if="env.pos.config.display_onhand and product['type'] == 'product'"/>
+                        <t t-if="env.pos.config.display_barcode and product.barcode">
+                            <span> <i class="fa fa-barcode"/> </span>
+                            <span> <t t-esc="props.product.barcode"/> </span>
+                        </t>
+                        <t t-if="env.pos.config.display_cost_price">
+                             Cost: <t t-esc="env.pos.format_currency(product.standard_price, 'Product Price')"/>
+                        </t>
+                        <span class="sale_with_package" t-if="env.pos.get_packaging_by_product(product)"/>
+                    </t>
+                    <t t-if="!env.pos.config.display_product_ref">
+                        <ProductName product="product"/>
+                        <ProductOnHand product="product" t-if="env.pos.config.display_onhand and product['type'] == 'product'"/>
+                        <t t-if="env.pos.config.display_cost_price">
+                            [ Cost: <t t-esc="env.pos.format_currency(product.standard_price, 'Product Price')"/>]
+                        </t>
+                    </t>
+                </div>
+            </article>
+        </t>
+    </t>
+
+</templates>

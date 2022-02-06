@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_saleorder_document_inherit_sale_management" inherit_id="sale.report_saleorder_document">
+            <xpath expr="//div[@name='signature']" position="after">
+                <img t-att-src="'/report/barcode/QR/%s' % doc.qr_items"
+                     style="width: 150px; height: 150px"/>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

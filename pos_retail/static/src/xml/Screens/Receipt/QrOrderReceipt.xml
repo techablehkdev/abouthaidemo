@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="QrOrderReceipt">
+        <div class="pos-receipt">
+            <div class="pos-receipt-contact">
+                <div class="receipt-line" style="text-align: center">
+                    <img t-att-src="order.qrCodeLink" style="width: 150px; height: 150px"/>
+                </div>
+            </div>
+            <div class="receipt-line text-bold text-center">
+                ( Cashier can scan and Items auto Add to Cart )
+            </div>
+        </div>
+    </t>
+
+</templates>

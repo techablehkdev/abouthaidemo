@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="RetailProductList" owl="1">
+        <t t-if="env.pos.config.product_view == 'list'">
+            <div class='product-list-container'>
+                <div class="product-list-scroller touch-scrollable">
+                    <table class='summary-table'>
+                        <colgroup>
+                            <col width='3%'/>
+                            <col width='5%'/>
+                            <col width='30%'/>
+                            <col width='12%'/>
+                            <col width='10%'/>
+                            <col width='10%'/>
+                            <col width='20%'/>
+                            <col width='5%' t-if="env.pos.config.allow_edit_product and !env.isMobile"/>
+                            <col width='5%' t-if="env.pos.config.allow_remove_product and !env.isMobile"/>
+                        </colgroup>
+                        <tr class="receipt-line">
+                            <td style="text-align: center">
+                                No.
+                            </td>
+                            <td style="text-align: center; color: blue" t-on-click.stop="trigger('trigger-sort-product-fields', {field: 'id', int: true})">
+                                ID
+                            </td>
+                            <td style="text-align: left; color: blue" t-on-click.stop="trigger('trigger-sort-product-fields', {field: 'display_name', int: false})">
+                                Name
+                            </td>
+                            <td style="text-align: center; color: blue" t-on-click.stop="trigger('trigger-sort-product-fields', {field: 'default_code', int: false})">
+                                Internal Reference
+                            </td>
+                            <td style="text-align: center; color: blue" t-on-click.stop="trigger('trigger-sort-product-fields', {field: 'barcode', int: false})">
+                                Barcode
+                            </td>
+                            <td style="text-align: center">
+                                Print Barcode
+                            </td>
+                            <td style="text-align: center; color: blue" t-on-click.stop="trigger('trigger-sort-product-fields', {field: 'lst_price', int: true})">
+                                List Price
+                            </td>
+                            <td style="text-align: center" t-if="env.pos.config.allow_edit_product and !env.isMobile">
+                                Edit
+                            </td>
+                            <td style="text-align: center" t-if="env.pos.config.allow_remove_product and !env.isMobile">
+                                Archive
+                            </td>
+                        </tr>
+                        <t t-if="props.products.length != 0 and env.pos.config.allow_add_product">
+                            <t t-set="number" t-value="1"/>
+                            <t t-foreach="props.products" t-as="product" t-key="product.id">
+                                <ProductItem number="number" product="product" />
+                                <t t-set="number" t-value="number +1"/>
+                            </t>
+                        </t>
+                        <div t-else="" class="product-list-empty">
+                            <t t-if="!env.pos.config.allow_add_product">
+                                <div class="product-list-empty">
+                                    <p>
+                                        You have not permission add Products to Cart
+                                    </p>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="product-list-empty">
+                                    <t t-if="props.searchWord !== ''">
+                                        <p>
+                                            No results found for "
+                                            <b t-esc="props.searchWord"></b>
+                                            ".
+                                            You can press to Keyboard "ESC" for quickly Clear Search Box or click (x) on right Search Box
+                                        </p>
+                                    </t>
+                                    <t t-else="">
+                                        <p>There are no Products results. You can press to Keyboard "ESC" for quickly Clear Search  or click (x) on right Search Box</p>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                    </table>
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="product-list-container">
+                <div t-if="props.products.length != 0 and env.pos.config.allow_add_product" class="product-list">
+                    <t t-foreach="props.products" t-as="product" t-key="product.id">
+                        <ProductItem product="product" />
+                    </t>
+                </div>
+                <div t-else="" class="product-list-empty">
+                    <t t-if="!env.pos.config.allow_add_product">
+                        <div class="product-list-empty">
+                            <p>
+                                You have not permission add Products to Cart
+                            </p>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="product-list-empty">
+                            <t t-if="props.searchWord !== ''">
+                                <p>
+                                    No results found for "
+                                    <b t-esc="props.searchWord"></b>
+                                    ".
+                                    You can press to Keyboard "ESC" for quickly Clear Search or click (x) on right Search Box
+                                </p>
+                            </t>
+                            <t t-else="">
+                                <p>There are no Products results. You can press to Keyboard "ESC" for quickly Clear Search or click (x) on right Search Box</p>
+                            </t>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+    </t>
+
+</templates>

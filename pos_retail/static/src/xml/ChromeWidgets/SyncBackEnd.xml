@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="SyncBackEnd" owl="1">
+        <div class="oe_status" t-on-click="onClick">
+            <div t-if="state.status === 'connected'" class="js_connected oe_icon oe_green">
+                <span> </span>
+                <i class="fa fa-undo" role="img" aria-label="Sync Products and Customers Connected"
+                   title="Sync Products and Customers Connected"></i>
+            </div>
+            <div t-if="state.status === 'connecting'" class="js_connecting oe_icon">
+                <span><t t-esc="state.msg"/></span>
+                <i class="fa fa-fw fa-spin fa-circle-o-notch" role="img"
+                   aria-label="Sync Products and Customers Connecting" title="Sync Products and Customers Connecting"></i>
+            </div>
+            <div t-if="state.status === 'disconnected'" class="js_disconnected oe_icon oe_red">
+                <span><t t-esc="state.msg"/></span>
+                <i class="fa fa-undo" role="img" aria-label="Sync Products and Customers Disconnected"
+                   title="Sync Products and Customers Disconnected"></i>
+            </div>
+            <div t-if="state.status === 'error'" class="js_error oe_icon oe_red">
+                <span><t t-esc="state.msg"/></span>
+                <i class="fa fa-undo" role="img" aria-label="Sync Products and Customers Error"
+                   title="Sync Products and Customers Error"></i>
+            </div>
+        </div>
+    </t>
+
+</templates>

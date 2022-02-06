@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ProductOnHand" owl="1">
+        <span class="qty_available"
+              t-on-click.stop="updateStockEachLocation"
+              t-on-mouseover.stop="_loadStock"
+               t-att-class="addedClasses"
+              title="Available Quantity in Stock">
+            <span> </span>
+            <i class="fa fa-cubes"/> <t t-esc="env.pos.format_currency_no_symbol(state.qty_available)"/>
+        </span>
+    </t>
+
+</templates>

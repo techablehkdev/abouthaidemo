@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="pos_merge_order_form" model="ir.ui.view">
+            <field name="name">Merge Orders</field>
+            <field name="model">pos.merge.order</field>
+            <field name="arch" type="xml">
+                <form string="Merge Orders">
+                    <footer>
+                        <button name="mergeOrders" class="oe_highlight" string="Merge Orders Selected"
+                                confirm="Are you sure merge orders selected ?"
+                                type="object"/>
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pos_merge_order" model="ir.actions.act_window">
+            <field name="name">Merge Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.merge.order</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="point_of_sale.model_pos_order" />
+            <field name="binding_view_types">list</field>
+        </record>
+
+    </data>
+</odoo>

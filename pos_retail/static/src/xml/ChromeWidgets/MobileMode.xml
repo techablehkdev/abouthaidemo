@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="MobileMode" owl="1">
+        <div class="oe_status display-mode" t-on-click="onClick">
+            <t t-if="env.isMobile">
+                <i class="fa fa-desktop" aria-hidden="true"/>
+            </t>
+            <t t-else="">
+                <i class="fa fa-mobile" aria-hidden="true"/>
+            </t>
+        </div>
+    </t>
+
+</templates>

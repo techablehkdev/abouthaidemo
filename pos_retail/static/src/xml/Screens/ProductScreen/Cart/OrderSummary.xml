@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="OrderSummary" t-inherit="point_of_sale.OrderSummary" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('line')]" position="after">
+            <table class='summary-table' style="display: inline-table; width: 100%">
+                <colgroup>
+                    <col width='60%'/>
+                    <col width='40%'/>
+                </colgroup>
+                <tr class="receipt-line" t-if="!env.isMobile" style="cursor: unset">
+                    <td style="text-align: center">
+                        Receipt No: <t t-esc="env.pos.get_order()['name']"/>
+                    </td>
+                    <td style="text-align: center">
+                        Created at :<t t-esc="env.pos.get_order()['created_time']"/>
+                    </td>
+                </tr>
+            </table>
+            <ClientInformation partner="env.pos.get_order().get_client()"
+                               currentOrder="env.pos.get_order()"
+                               t-if="env.pos.get_order() and env.pos.get_order().get_client() and state.screen != 'Products' and !env.session.restaurant_order and !env.isMobile"/>
+            <OrderSummaryExtend t-if="state.screen == 'Products' and !env.session.restaurant_order and !env.isMobile"/>
+            <PointsSummary
+                    t-if="env.pos.retail_loyalty and state.screen == 'Products' and !env.session.restaurant_order and !env.isMobile"/>
+        </xpath>
+        <xpath expr="//div[hasclass('line')]" position="attributes">
+            <attribute name="class">line oe_hidden</attribute>
+        </xpath>
+    </t>
+
+</templates>

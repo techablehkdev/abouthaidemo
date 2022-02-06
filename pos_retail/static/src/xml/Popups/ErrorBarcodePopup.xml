@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ErrorBarcodePopup" t-inherit="point_of_sale.ErrorBarcodePopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//footer/div" position="replace">
+            <div class="button highlight" t-on-click.stop="createNewProduct" t-if="env.pos.config.create_product_direct" style="width: 300px">
+                Create New Product
+            </div>
+            <div class="button cancel" t-on-click="cancel">
+                Close (ESC)
+            </div>
+        </xpath>
+    </t>
+
+</templates>
+

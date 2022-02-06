@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PopUpModifiersAttributeValues" owl="1">
+        <div role="dialog" class="modal-dialog">
+            <div class="popup product-info-popup">
+                <header class="title drag-handle">
+                    <t t-esc="props.title"/>
+                </header>
+                <main class="body">
+                    <t t-foreach="state.productAttributes" t-as="att" t-key="att.id">
+                        <div class="section-financials">
+                            <div class="section-title">
+                                <span t-esc="att.attribute_id[1]" class="global-info-title product-name"/>
+                                <span t-if="env.pos.product_attribute_by_id[att.attribute_id[0]].multi_choice">
+                                    ( Multi Choice )
+                                </span>
+                                <span t-else="">
+                                    ( Only One Choice )
+                                </span>
+                                <div class="section-title-line"></div>
+                            </div>
+                            <div class="section-body">
+                                <t t-foreach="att.value_ids" t-as="value_id" t-key="value_id">
+                                    <t t-set="value" t-value="env.pos.product_attribute_value_by_id[value_id]"/>
+                                    <span t-att-class="{'item-selected' :  state.valuesSelected and state.valuesSelected.includes(value_id) ? true : undefined}"
+                                          class="category-simple-button selection-box" t-on-click.stop="pickValue(value_id)">
+                                        <t t-esc="value.name"/>
+                                    </span>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </main>
+                <footer class="footer">
+                    <div class="button confirm" t-on-click="confirm" t-if="!props.disableConfirmButton">
+                        Confirm
+                    </div>
+                    <div class="button cancel" t-on-click="cancel">
+                        Close
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </t>
+</templates>

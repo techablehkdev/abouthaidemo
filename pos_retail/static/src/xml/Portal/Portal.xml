@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template xml:space="preserve">
+
+    <t t-name="PointOfSalePortal">
+        <div class="o_hr_attendance_kiosk_mode_container o_home_menu_background">
+            <span class="o_hr_attendance_kiosk_backdrop"/>
+            <div class="o_hr_attendance_clock text-center"/>
+            <div class="o_hr_attendance_kiosk_mode">
+                <div class="o_hr_attendance_user_badge o_home_menu_background">
+                    <img class="img rounded-circle"
+                         t-attf-src="/web/image?model=res.users&amp;field=image_medium&amp;id=#{widget.user.id}"
+                         t-att-title="widget.user.name" t-att-alt="widget.user.name"/>
+                </div>
+                <h1 class="mb8">Welcome : <t t-esc="widget.user.name"/></h1>
+                <t t-if="widget.pos_configs and widget.pos_configs.length != 0">
+                    <h3 class="mt8 mb24">What Point Of Sale for Starting Sale ?</h3>
+                    <t t-foreach="widget.pos_configs" t-as="pos">
+                        <a class="fa fa-sign-in o_pos_login fa-sign-in btn-secondary"
+                           t-att-id="pos.id"
+                           t-att-aria-label="pos.name"
+                           t-att-title="pos.name">
+                            <t t-esc="pos.name"/>
+                            <t t-if="pos.pos_session_username">
+                                (
+                                <t t-if="pos.current_session_state">
+                                    <t t-esc="pos.current_session_state"/>
+                                </t>
+                                <t t-else="">
+                                    Opened
+                                </t>
+                                by <t t-esc="pos.pos_session_username"/> )
+                            </t>
+                            <t t-else="">
+                                ( Closed )
+                            </t>
+                        </a>
+                    </t>
+                </t>
+                <t t-else="">
+                    <h3 class="mt8 mb24">Your User not yet have Access any Point Of Sale, Please contact your Admin !</h3>
+                </t>
+                <footer>
+                    <a class="fa fa-sign-out o_pos_backend btn-secondary"
+                       t-if="widget.user.allow_access_backend"
+                       aria-label="Back End"
+                       title="Back End">
+                        Back End
+                    </a>
+                    <a class="fa fa-sign-out o_pos_logout btn-secondary"
+                       aria-label="Log Out"
+                       title="Log Out">
+                        Log Out
+                    </a>
+                </footer>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="PosPortalHeaderIcon">
+        <div class="o_debug_manager switch_pos">
+            <a class="dropdown-toggle o-no-caret" data-toggle="dropdown" data-display="static" aria-expanded="false" title="Point Of Sale Portal" href="#" role="button">
+                <i class="fa fa-sign-in" role="img" aria-label="Point Of Sale Portal"/>
+            </a>
+            <div class="o_mail_systray_dropdown dropdown-menu dropdown-menu-right oe_hidden" role="menu">
+                <div class="o_mail_systray_dropdown_items"/>
+            </div>
+        </div>
+    </t>
+
+</template>

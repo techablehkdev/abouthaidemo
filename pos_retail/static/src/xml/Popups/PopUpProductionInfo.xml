@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PopUpProductInfo" owl="1">
+        <div role="dialog" class="modal-dialog">
+            <div class="popup product-info-popup">
+                <header class="title drag-handle">
+                    <t t-esc="props.title"/>
+                </header>
+                <main class="body">
+                    <div class="section-product-info-title">
+                        <div class="column flex-start">
+                            <span t-esc="props.product.display_name" class="global-info-title product-name"/>
+                            <span><t t-if="props.product.default_code" t-esc="props.product.default_code"/>
+                                <t t-if="props.product.default_code and props.product.barcode"> - </t>
+                                <t t-if="props.product.barcode" t-esc="props.product.barcode"/></span>
+                        </div>
+                        <div class="column flex-end">
+                            <span t-esc="env.pos.format_currency(productInfo.all_prices.price_with_tax)"
+                                  class="global-info-title"/>
+                            <t t-foreach="productInfo.all_prices.tax_details" t-as="tax" t-key="tax.name">
+                                <div><t t-esc="tax.name"/>:
+                                    <t t-esc="env.pos.format_currency(tax.amount)"/></div>
+                            </t>
+                        </div>
+                    </div>
+                    <div t-if="productInfo.lots and productInfo.lots.length != 0">
+                        <div class="section-title">
+                            <span>Lot(s) Serial Number</span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-inventory-body">
+                            <table class='summary-table mobile-table' style="display: inline-table">
+                                <colgroup>
+                                    <col width='40%'/>
+                                    <col width='25%'/>
+                                    <col width='25%'/>
+                                    <col width='10%'/>
+                                </colgroup>
+                                <tr class="receipt-line">
+                                    <td style="text-align: center">
+                                        Lot Serial Number
+                                    </td>
+                                    <td style="text-align: center">
+                                        Ref
+                                    </td>
+                                    <td style="text-align: center">
+                                        Quantity
+                                    </td>
+                                    <td style="text-align: center">
+                                        Add to Cart
+                                    </td>
+                                </tr>
+                                <t t-foreach="productInfo.lots" t-as="lot" t-key="lot.id">
+                                    <tr class="receipt-line">
+                                        <td style="text-align: center">
+                                            <t t-esc="lot.name" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="lot.ref or 'N/A'" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="env.pos.format_currency_no_symbol(lot.product_qty)"
+                                               class="table-name"/>
+                                        </td>
+                                        <td>
+                                            <i t-on-click.stop="addToCartWithLot(lot.id)"
+                                               class="oe_link_icon fa fa-shopping-cart oe_icon line-icon"
+                                               aria-label="Add to Cart with Lot"
+                                               role="img"
+                                               title="Add to Cart with Lot"
+                                            />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                    <div t-if="props.line">
+                        <div class="section-title">
+                            <span>Line Detail </span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-inventory-body">
+                            <ul class="line_extend">
+                                <li class="info" t-if="env.pos.config.display_barcode and props.line.product.barcode">
+                                    Barcode: <t t-esc="props.line.product.barcode"/>
+                                </li>
+                                <li class="info" t-if="env.pos.config.display_tax_orderline and props.line.get_tax()">
+                                    <t t-set="taxes" t-value="props.line.get_taxes()"/>
+                                    <t t-foreach="taxes || []" t-as="tax" t-key="tax.id">
+                                        <t t-esc="tax.name"/>
+                                    </t>
+                                </li>
+                                <li class="info">
+                                    Taxes: <t t-esc="env.pos.format_currency_no_symbol(props.line.get_tax())"/>
+                                </li>
+                                <li class="info" t-if="props.line.get_discount_str() !== '0'">
+                                    With a <t t-esc="props.line.get_discount_str()"/>
+                                    % discount
+                                </li>
+                                <li class="info" t-if="env.pos.config.display_amount_discount and props.line.discount">
+                                    Discount: <t t-esc="env.pos.format_currency(props.line.get_price_discount())"/>
+                                </li>
+                                <li class="info" t-if="props.line.price_extra">
+                                    Price Extra: <t t-esc="env.pos.format_currency(props.line.price_extra)"/>
+                                </li>
+                                <t t-if="props.line.modifiers">
+                                    <t t-foreach="props.line.modifiers" t-as="modifier" t-key="modifier">
+                                        <li class='info info-label' style="width: 100%">
+                                            <span> - </span>
+                                            <t t-esc="modifier"/>
+                                            <span> : </span>
+                                            <t t-esc="props.line.modifiers[modifier]"/>
+                                        </li>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.get_note()">
+                                    <li class="info orderline-note">
+                                        <i class="fa fa-tag" role="img" aria-label="Note" title="Note"/>
+                                        <t t-esc="props.line.get_note()"/>
+                                    </li>
+                                </t>
+                                <t t-if="getDiscountExtra">
+                                    <li class="info">
+                                        Discount Extra: <t t-esc="getDiscountExtra"/>
+                                        %
+                                    </li>
+                                </t>
+                                <t t-if="getPriceExtra">
+                                    <li class="info">
+                                        Price Extra: <t
+                                            t-esc="env.pos.format_currency_no_symbol(getPriceExtra, 'Product Price')"/>
+                                    </li>
+                                </t>
+                                <li class="info" t-if="env.pos.config.display_cost_price">
+                                    Cost: <t
+                                        t-esc="env.pos.format_currency_no_symbol(props.line.product.standard_price, 'Product Price')"/>
+                                </li>
+                                <t t-if="props.line.plus_point > 0">
+                                    <li class="info alert_line">
+                                        Plus Points: <t
+                                            t-esc="env.pos.format_currency_no_symbol(props.line.plus_point)"/>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.redeem_point > 0">
+                                    <li class="info">
+                                        Redeem Points: <t
+                                            t-esc="env.pos.format_currency_no_symbol(props.line.redeem_point)"/>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.promotion_reason">
+                                    <li class='info alert_line'>
+                                        Promotion: <t t-esc="props.line.promotion_reason"/>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.promotion_amount">
+                                    <li class='info alert_line'>
+                                        Promotion Amount: <t
+                                            t-esc="env.pos.format_currency_no_symbol(props.line.promotion_amount)"/>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.promotion_discount">
+                                    <li class='info alert_line'>
+                                        Promotion Disc: <t t-esc="props.line.promotion_discount"/>
+                                        %
+                                    </li>
+                                </t>
+                                <li class="info" t-if="env.pos.config.display_margin">
+                                    Margin:
+                                    <t t-esc="props.line.get_margin().toFixed(2)"/>%
+                                    (
+                                    <t t-esc="env.pos.format_currency(((props.line.price - props.line.product.standard_price) * props.line.quantity), 'Product Price')"/>
+                                    )
+                                </li>
+                                <li class='info' t-if="props.line.get_sale_person() and env.pos.sellers">
+                                    User: <t t-esc="props.line.get_sale_person().name"/>
+                                </li>
+                                <t t-if="props.line.combo_items and props.line.combo_items.length > 0">
+                                    <li class='info'>
+                                        <span t-on-click.stop="editBundlePackItems"
+                                              aria-label="Change Quantities of Bundle Pack Items"
+                                              title="Change Quantities of Bundle Pack Items"
+                                              class="with-badge" t-att-badge="props.line.combo_items.length">
+                                            <i class="oe_link_icon fa fa-edit oe_icon line-icon" aria-hidden="true"></i>
+                                        </span>
+                                        Edit Combo/Bundle Items
+                                    </li>
+                                    <t t-foreach="props.line.combo_items" t-as="combo_item"
+                                       t-key="combo_item.product_id[0]">
+                                        <t t-if="combo_item.quantity > 0">
+                                            <li class='info'>
+                                                <t t-set="productComboItem"
+                                                   t-value="env.pos.db.get_product_by_id(combo_item.product_id[0])"/>
+                                                <span t-on-click.stop="modifiersComboItem(combo_item)"
+                                                      aria-label="Pizza Modifiers"
+                                                      title="Pizza Modifiers"
+                                                      t-att-class="{'oe_hidden': !productComboItem or !productComboItem.pizza_modifier}"
+                                                      class="with-badge">
+                                                    <i class="oe_link_icon fa fa-cutlery oe_icon line-icon"
+                                                       aria-hidden="true"></i>
+                                                </span>
+                                                <span> +  </span>
+                                                <t t-esc="combo_item.quantity * props.line['quantity']"/>
+                                                <span> </span>
+                                                <t t-esc="env.pos.generate_wrapped_name(combo_item.product_id[1])[0]"/>
+                                                <t t-if="combo_item.lot_number">
+                                                    Lot/Serial number : <t t-esc="combo_item.lot_number"/>
+                                                </t>
+                                                <t t-if="combo_item.use_date">
+                                                    Expired Date of Lot: <t t-esc="combo_item.use_date"/>
+                                                </t>
+                                                <t t-if="combo_item.price_extra">
+                                                    Price Extra: <t
+                                                        t-esc="env.pos.format_currency_no_symbol(combo_item.price_extra)"/>
+                                                </t>
+                                                <t t-if="combo_item['modifiers']">
+                                                    <t t-foreach="combo_item['modifiers']" t-as="item" t-key="item">
+                                                        <li class='info info-label'>
+                                                            <span> - </span>
+                                                            <t t-esc="item"/>
+                                                            <span> : </span>
+                                                            <t t-esc="combo_item['modifiers'][item]"/>
+                                                        </li>
+                                                    </t>
+                                                </t>
+                                            </li>
+                                        </t>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.addons and props.line.addons.length > 0">
+                                    <li class='info info-label'>
+                                        Add-ons:
+                                    </li>
+                                    <t t-foreach="props.line.addons" t-as="addon" t-key="addon.id">
+                                        <li class='info'>
+                                            + <t t-esc="props.line.quantity"/>
+                                            |
+                                            <t t-esc="addon.name"/>
+                                            with price
+                                            <t t-esc="env.pos.format_currency_no_symbol(addon.get_price(addon, env.pos._get_active_pricelist(), props.line.quantity))"/>
+                                        </li>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.tags and props.line.tags.length > 0">
+                                    <li class='info'>
+                                        Tags/Notes added:
+                                        <t t-foreach="props.line.tags" t-as="tag" t-key="tag.id">
+                                            <span><i class="fa fa-tag"/>
+                                                <t t-esc="tag.name"/></span>
+                                        </t>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.get_bom_lines().length > 0">
+                                    <li class='info'>
+                                    Bill Of Material:
+                                    </li>
+                                    <t t-foreach="props.line.get_bom_lines()" t-as="bom_line" t-key="bom_line.id">
+                                        <li class='info'>
+                                            + <t t-esc="bom_line.quantity"/>
+                                            /
+                                            <t t-esc="bom_line.bom_line.product_id[1]"/>
+                                        </li>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.variants and props.line.variants.length > 0">
+                                    <li class='info'>
+                                    Attributes and Values:
+                                    </li>
+                                    <t t-foreach="props.line.variants" t-as="v" t-key="v.id">
+                                        <li class='info'>
+                                            + <t t-esc="v.quantity"/>
+                                            <span> </span>
+                                            <t t-esc="v.attribute_id[1]"/>
+                                            <span> / </span>
+                                            <t t-esc="v.value_id[1]"/>
+                                            with Price:
+                                            <t t-esc="env.pos.format_currency_no_symbol(v.price_extra)"/>
+                                        </li>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.mrp_production_name">
+                                    <li class='info'>
+                                    MRP Order: <t t-esc="props.line.mrp_production_name"/>
+                                    </li>
+                                    <li class='info'>
+                                    MRP State : <t t-esc="props.line.mrp_production_state"/>
+                                    </li>
+                                </t>
+                                <li class="info"
+                                    t-if="env.pos.config.sync_multi_session and env.pos.config.display_person_add_line and props.line.session_info">
+                                    <t t-esc="props.line.session_info.user.name"/>
+                                    added at
+                                    <t t-esc="props.line.session_info.date"/>
+                                </li>
+                                <t t-if="env.pos.price_each_qty_by_product_tmpl_id[props.line.product.product_tmpl_id]">
+                                    <li class='info'>
+                                    Price each quantities:
+                                    </li>
+                                    <t t-foreach="env.pos.price_each_qty_by_product_tmpl_id[props.line.product.product_tmpl_id]"
+                                       t-as="item" t-key="item.id">
+                                        <li class='info'>
+                                            Bigger than <t t-esc="item.quantity"/>
+                                            items
+                                            <span> <t t-esc="env.pos.format_currency_no_symbol(item.price_unit)"/> </span>
+                                        </li>
+                                    </t>
+                                </t>
+                                <t t-if="props.line.packaging">
+                                    <li class='info'>
+                                    Packaging : <t t-esc="props.line.packaging.name"/>
+                                    </li>
+                                </t>
+                                <t t-if="env.pos.config.sync_multi_session and env.pos.config.send_order_to_kitchen and props.line.order_time">
+                                    <li class="info">
+                                        Time add to Cart: <t t-esc="props.line.order_time"/>
+                                    </li>
+                                </t>
+                                <li class="info line-state"
+                                    t-if="env.pos.config.sync_multi_session and env.pos.config.screen_type != 'kitchen' and props.line.kitchen_notes">
+                                    Transaction Logs: <t t-esc="props.line.kitchen_notes"/>
+                                </li>
+                                <li class="info line-state"
+                                    t-if="env.pos.config.sync_multi_session and env.pos.config.screen_type != 'kitchen' and props.line.state">
+                                    State: <t t-esc="props.line.state"/>
+                                </li>
+                                <t t-if="props.line.cancel_reason">
+                                    <li class='info'>
+                                        Cancel Reason: <t t-esc="props.line.cancel_reason"/>
+                                    </li>
+                                </t>
+                                <t t-if="env.pos.config.display_onhand and props.line.product['type'] == 'product'">
+                                    <li class="info alert_line">
+                                        Available Stock: <ProductOnHand product="props.line.product"/>
+                                    </li>
+                                </t>
+                                <t t-if="props.line.note">
+                                    <li class='info alert_line'>
+                                        Note: <t t-esc="props.line.note"/>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="section-title">
+                            <span>Update Quantity, Discount and Price </span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-inventory-body">
+                            <table class='summary-table mobile-table' style="display: inline-table">
+                                <colgroup>
+                                    <col width='40%'/>
+                                    <col width='30%'/>
+                                    <col width='30%'/>
+                                </colgroup>
+                                <tr class="receipt-line">
+                                    <td style="text-align: center" t-att-class="{'oe_hidden': !env.pos.config.allow_qty}">
+                                        Quantity
+                                    </td>
+                                    <td style="text-align: center"
+                                        t-att-class="{'oe_hidden': !env.pos.config.allow_discount}">
+                                        Disc (%)
+                                    </td>
+                                    <td style="text-align: center" t-att-class="{'oe_hidden': !env.pos.config.allow_price}">
+                                        Price
+                                    </td>
+                                </tr>
+                                <tr class="receipt-line">
+                                    <td t-att-class="{'oe_hidden': !env.pos.config.allow_qty}">
+                                        <input class="form-control edit-line-box"
+                                               type="number"
+                                               placeholder="Quantity"
+                                               t-att-value="props.line.quantity.toFixed(2)"
+                                               t-on-change="OnChangeQty"
+                                        />
+                                    </td>
+                                    <td t-att-class="{'oe_hidden': !env.pos.config.allow_discount}">
+                                        <input class="form-control edit-line-box"
+                                               type="number"
+                                               placeholder="Discount"
+                                               t-att-value="props.line.discount.toFixed(0)"
+                                               t-on-change="OnChangeDiscount"
+                                        />
+                                    </td>
+                                    <td t-att-class="{'oe_hidden': !env.pos.config.allow_price}">
+                                        <input class="form-control edit-line-box"
+                                               type="number"
+                                               t-att-value="props.line.price.toFixed(2)"
+                                               placeholder="Price Unit"
+                                               t-on-change="OnChangePrice"
+                                        />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="section-financials">
+                        <div class="section-title">
+                            <span>Financials</span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-financials-body">
+                            <table>
+                                <tr>
+                                    <td>Price excl. VAT:</td>
+                                    <td><t t-esc="env.pos.format_currency(productInfo.all_prices.price_without_tax)"/></td>
+                                </tr>
+                                <tr t-if="env.pos.config.display_cost_price">
+                                    <td>Cost:</td>
+                                    <td><t t-esc="costCurrency"/></td>
+                                </tr>
+                                <tr t-if="env.pos.config.display_margin">
+                                    <td>Margin:</td>
+                                    <td><t t-esc="marginCurrency"/>
+                                        (<t t-esc="marginPercent"/>%) </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <t t-foreach="productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
+                                    <tr class="searchable" t-on-click.stop="setPricelistToOrder(pricelist.id)">
+                                        <td t-esc="pricelist.name"/>
+                                        <td class="searchable" t-esc="env.pos.format_currency(pricelist.price)"/>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="section-inventory"
+                         t-if="env.pos.config.display_onhand and productInfo.warehouses.length > 0 and props.product.type == 'product'">
+                        <div class="section-title">
+                            <span>Inventory <t t-if="env.pos.pos_session.update_stock_at_closing">(as of opening)</t></span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-inventory-body">
+                            <table class='summary-table mobile-table' style="display: inline-table">
+                                <colgroup>
+                                    <col width='40%'/>
+                                    <col width='30%'/>
+                                    <col width='30%'/>
+                                </colgroup>
+                                <tr class="receipt-line">
+                                    <td style="text-align: center">
+                                        Warehouse
+                                    </td>
+                                    <td style="text-align: center">
+                                        Available
+                                    </td>
+                                    <td style="text-align: center">
+                                        Forecasted
+                                    </td>
+                                </tr>
+                                <t t-foreach="productInfo.warehouses" t-as="warehouse" t-key="warehouse.id">
+                                    <tr class="receipt-line" t-if="warehouse.available_quantity > 0">
+                                        <td style="text-align: center">
+                                            <t t-esc="warehouse.name" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="warehouse.available_quantity" class="table-name"/>
+                                            <span> </span>
+                                            <t t-esc="warehouse.uom" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="warehouse.forecasted_quantity" class="table-name"/>
+                                            <span> </span>
+                                            <t t-esc="warehouse.uom" class="table-name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                        <div class="section-title">
+                            <span>Your stock Location: <t t-esc="env.pos.get_source_stock_location().display_name"/></span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-inventory-body">
+                            <table class='summary-table mobile-table' style="display: inline-table">
+                                <colgroup>
+                                    <col width='40%'/>
+                                    <col width='30%'/>
+                                    <col width='30%'/>
+                                </colgroup>
+                                <tr class="receipt-line">
+                                    <td style="text-align: center">
+                                        Location
+                                    </td>
+                                    <td style="text-align: center">
+                                        Available
+                                    </td>
+                                    <td style="text-align: center">
+                                        Forecasted
+                                    </td>
+                                </tr>
+                                <t t-foreach="productInfo.locations" t-as="location" t-key="location.id">
+                                    <tr class="receipt-line" t-if="location.available_quantity > 0">
+                                        <td style="text-align: center">
+                                            <t t-esc="location.name" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="location.available_quantity" class="table-name"/>
+                                            <span> </span>
+                                            <t t-esc="location.uom" class="table-name"/>
+                                        </td>
+                                        <td style="text-align: center">
+                                            <t t-esc="location.forecasted_quantity" class="table-name"/>
+                                            <span> </span>
+                                            <t t-esc="location.uom" class="table-name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="section-supplier" t-if="productInfo.suppliers.length > 0">
+                        <div class="section-title">
+                            <span>Replenishment</span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-supplier-body">
+                            <table class="mobile-table">
+                                <t t-foreach="productInfo.suppliers" t-as="supplier" t-key="supplier.name">
+                                    <tr>
+                                        <td><span t-esc="supplier.name" class="table-name"/>:</td>
+                                        <div class="mobile-line">
+                                            <td><t t-esc="supplier.delay"/>
+                                                Days</td>
+                                            <td><t t-esc="env.pos.format_currency(supplier.price)"/></td>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="extra">
+                        <div class="section-variants" t-if="productInfo.variants.length > 0">
+                            <div class="section-title">
+                                <span>Attributes</span>
+                                <div class="section-title-line"></div>
+                            </div>
+                            <div class="section-variants-body">
+                                <table class="mobile-table">
+                                    <t t-foreach="productInfo.variants" t-as="variant" t-key="variant.name">
+                                        <tr>
+                                            <td><span t-esc="variant.name" class="table-name"/>:</td>
+                                            <td class="table-value">
+                                                <t t-foreach="variant.values" t-as="attribute_value"
+                                                   t-key="attribute_value.name">
+                                                    <span class="searchable"><t t-esc="attribute_value.name"/></span>
+                                                    <t t-if="attribute_value_index lt variant.values.length - 1">, </t>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-order">
+                        <div class="section-title">
+                            <span>Order</span>
+                            <div class="section-title-line"></div>
+                        </div>
+                        <div class="section-order-body">
+                            <table>
+                                <tr>
+                                    <td>Total Price excl. VAT:</td>
+                                    <td t-esc="orderPriceWithoutTaxCurrency" class="table-value"/>
+                                </tr>
+                                <tr t-if="env.pos.config.display_margin">
+                                    <td>Total Cost:</td>
+                                    <td t-esc="orderCostCurrency" class="table-value"/>
+                                </tr>
+                                <tr t-if="env.pos.config.display_margin">
+                                    <td>Total Margin:</td>
+                                    <td class="table-value"><t t-esc="orderMarginCurrency"/>
+                                        (<t t-esc="orderMarginPercent"/>%)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    <div class="button confirm" t-on-click="confirm" t-if="!props.disableConfirmButton">
+                        Add to Cart
+                    </div>
+                    <div class="button cancel" t-on-click="cancel">
+                        Close
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </t>
+</templates>

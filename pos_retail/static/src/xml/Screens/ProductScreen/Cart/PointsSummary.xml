@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PointsSummary" owl="1">
+        <table class='summary-table' style="display: inline-table; width: 100%" t-if="order">
+            <colgroup>
+                <col width='20%'/>
+                <col width='20%'/>
+                <col width='20%'/>
+                <col width='20%'/>
+                <col width='20%'/>
+            </colgroup>
+            <tr class="receipt-line" style="cursor: unset">
+                <td style="text-align: center" t-if="order.get_client()">
+                    <t t-esc="order.get_client().name"/>'s Points
+                </td>
+                <td style="text-align: center">
+                    Plus
+                </td>
+                <td style="text-align: center">
+                    Redeem
+                </td>
+                <td style="text-align: center">
+                    Remaining
+                </td>
+                <td style="text-align: center">
+                    Save
+                </td>
+            </tr>
+            <tr class="receipt-line" style="cursor: unset">
+                <td style="text-align: center">
+                    <t t-esc='env.pos.format_currency_no_symbol(get_points.pos_loyalty_point)'/>
+                    <t t-if="get_points.pos_loyalty_point &gt; 0">
+                        <i class="oe_link_icon fa fa-gift oe_icon line-lot-icon"
+                           style="color: blue"
+                           t-on-click.stop="_setLoyaltyReward"/>
+                    </t>
+                </td>
+                <td style="text-align: center">
+                    + <t t-esc='env.pos.format_currency_no_symbol(get_points.plus_point)'/>
+                </td>
+                <td style="text-align: center">
+                    - <t t-esc='env.pos.format_currency_no_symbol(get_points.redeem_point)'/>
+                </td>
+                <td style="text-align: center">
+                    <t t-esc='env.pos.format_currency_no_symbol(get_points.remaining_point)'/>
+                </td>
+                <td style="text-align: center">
+                    <t t-esc='env.pos.format_currency_no_symbol(get_points.next_point)'/>
+                </td>
+            </tr>
+        </table>
+        <t t-else="">
+            <div></div>
+        </t>
+    </t>
+
+ </templates>

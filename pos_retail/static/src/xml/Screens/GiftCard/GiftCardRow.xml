@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="GiftCardRow" owl="1">
+        <t t-set="card" t-value="props.card"/>
+        <tr class="receipt-line"
+            t-on-click="trigger('click-card', {card: card})"> <!-- matching to GiftCardRow event t-on-click-card -->
+            <td style="text-align: center">
+                <t t-esc="props.number"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="card.create_date"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="card.create_uid[1]"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="card.name"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="card.code"/>
+            </td>
+            <td style="text-align: center">
+                <t t-if="card.partner_id">
+                    <t t-esc="card.partner_id[1]"/>
+                </t>
+                <t t-else="">
+                    N/A
+                </t>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="env.pos.format_currency(card.initial_amount)"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="env.pos.format_currency(card.balance)"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="env.pos.format_currency_no_symbol(card.count_redeem)"/>
+            </td>
+            <td style="text-align: center">
+                <t t-esc="card.expired_date"/>
+            </td>
+            <td style="text-align: center">
+                <t t-if="card.state == 'valid'">Valid</t>
+                <t t-if="card.state == 'expired'">Expired</t>
+            </td>
+        </tr>
+    </t>
+</templates>

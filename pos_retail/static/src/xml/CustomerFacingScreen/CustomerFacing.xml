@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-extend="CustomerFacingDisplayOrderLines">
+        <t t-jquery="div[class*='pos_orderlines_header']" t-operation="append">
+            <div>Taxes</div>
+            <div>Discount</div>
+        </t>
+        <t t-jquery="div[class*='pos_orderlines_list']" t-operation="replace">
+            <div class="pos_orderlines_list">
+                <t t-if="order">
+                    <div t-foreach="order.get_orderlines()" t-as="orderline" class="pos_orderlines_item">
+                        <div><div t-attf-style="background-image:url(#{orderline.product.image_base64})"/></div>
+                        <div t-esc="orderline.get_full_product_name()"/>
+                        <div t-esc="orderline.get_quantity_str()"/>
+                        <div t-esc="pos.format_currency_no_symbol(orderline.get_display_price())"/>
+                        <div t-esc="pos.format_currency_no_symbol(orderline.get_tax() || 0.00)"/>
+                        <div>
+                            <t t-esc="orderline.get_discount_str()"/> %
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </t>
+
+    <t t-extend="CustomerFacingDisplayOrder">
+        <t t-jquery="div[class*='pos-total']" t-operation="before">
+            <div t-if="order and order.get_client()">
+                <span>Points: <t t-esc="pos.format_currency_no_symbol(order.get_client().pos_loyalty_point) || 0.00"/></span>
+            </div>
+            <div t-if="order">
+                <span>Discount: <t t-esc="pos.format_currency_no_symbol(order.get_total_discount()) || 0.00"/></span>
+            </div>
+        </t>
+    </t>
+
+</templates>

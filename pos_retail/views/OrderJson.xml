@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <record id="pos_order_json_form" model="ir.ui.view">
+            <field name="name">pos.order.json.form</field>
+            <field name="model">pos.order.json</field>
+            <field name="arch" type="xml">
+                <form string="Order Json">
+                    <header>
+                        <!--                        <button name="autoUpdateStock"-->
+                        <!--                                string="Uopdate Stock Quants"-->
+                        <!--                                type="object"-->
+                        <!--                                class="btn-primary"/>-->
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="ean13"/>
+                                <field name="session_id"/>
+                                <field name="uid"/>
+                                <field name="order_id"/>
+                                <field name="state"/>
+                            </group>
+                            <group>
+                                <field name="json"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="pos_order_json_tree" model="ir.ui.view">
+            <field name="name">pos.order.json.tree</field>
+            <field name="model">pos.order.json</field>
+            <field name="arch" type="xml">
+                <tree string="Order Json">
+                    <field name="name"/>
+                    <field name="ean13"/>
+                    <field name="session_id"/>
+                    <field name="uid"/>
+                    <field name="order_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pos_order_json_search" model="ir.ui.view">
+            <field name="name">pos.order.json.filter</field>
+            <field name="model">pos.order.json</field>
+            <field name="arch" type="xml">
+                <search string="Order Jsons">
+                    <field name="name"/>
+                    <field name="ean13"/>
+                    <field name="session_id"/>
+                    <field name="uid"/>
+                    <field name="order_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_pos_order_json">
+            <field name="name">Order Jsons</field>
+            <field name="res_model">pos.order.json</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_action_pos_order_json"
+                  action="action_pos_order_json"
+                  parent="menu_master_data"
+                  sequence="150"
+        />
+
+    </data>
+</odoo>

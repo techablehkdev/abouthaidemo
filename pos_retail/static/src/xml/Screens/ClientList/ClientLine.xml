@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="RetailClientLine" owl="1">
+        <t t-set="partner" t-value="props.partner"/>
+<!--        t-on-mouseover.stop="_autoSyncBackend"-->
+        <tr t-attf-class="receipt-line {{highlight}}"
+            t-att-class="{oe_hidden: props.partner.removed}"
+            t-att-data-id="partner.id"
+            t-on-click="trigger('set-customer-to-cart', {client: props.partner})">
+            <td>
+                <t t-esc="props.number"/>
+            </td>
+            <td>
+                <span class="product-line-name">
+                    <t t-esc="partner.name"/>
+                </span>
+                <i t-on-click.stop="env.pos._syncPartners()"
+                   class="oe_link_icon fa fa-undo"
+                   aria-label="Sync Customer"
+                   role="img"
+                   style="color: blue; cursor: pointer; float: right"
+                   title="Sync Customer"
+                />
+                <i t-on-click.stop="editCustomer"
+                   t-if="env.pos.config.update_client"
+                   class="oe_link_icon fa fa-edit oe_icon line-lot-icon"
+                   aria-label="Modifiers Customer"
+                   role="img"
+                   style="color: blue; cursor: pointer; float: right"
+                   title="Modifiers Customer"
+                />
+                <i t-on-click.stop="changePricelist"
+                   t-if="env.pos.config.update_client and CountAllPricelist &gt; 1"
+                   class="oe_link_icon fa fa-list oe_icon line-lot-icon"
+                   aria-label="Set Pricelist to Customer"
+                   role="img"
+                   style="color: blue; cursor: pointer; float: right"
+                   title="Set Pricelist to Customer"
+                />
+                <a t-if="highlight"
+                   t-on-click.stop="showMore"
+                   style="color: blue">
+                    <i class="fa fa-link"/>
+                </a>
+            </td>
+            <td>
+                <t t-esc="partner.address"/>
+            </td>
+            <td>
+                <t t-esc="partner.phone || partner.mobile"/>
+                <i t-on-click.stop="sendMessage(partner)"
+                   t-if="(partner.mobile || partner.phone) and env.pos.config.whatsapp_api and env.pos.config.whatsapp_token"
+                   class="oe_link_icon fa fa-whatsapp oe_icon line-lot-icon"
+                   aria-label="Send Message"
+                   role="img"
+                   title="Send Message"
+                />
+            </td>
+            <td>
+                <t t-esc="partner.email || 'N/A'"/>
+            </td>
+            <td>
+                <t t-esc="partner.barcode or 'N/A'"/>
+                <t t-if="partner.barcode">
+                    <i t-on-click.stop="printBarcode"
+                       class="oe_link_icon fa fa-print oe_icon line-lot-icon"
+                       aria-label="Print Barcode"
+                       role="img"
+                       title="Print Barcode"
+                    />
+                </t>
+                <t t-else="">
+                    <i t-on-click.stop="addBarcode"
+                       class="oe_link_icon fa fa-plus oe_icon line-lot-icon"
+                       aria-label="Add Barcode"
+                       role="img"
+                       title="Add Barcode"
+                    />
+                </t>
+            </td>
+            <td>
+                <t t-if="partner.parent_id">
+                    <t t-esc="partner.parent_id[1]"/>
+                </t>
+            </td>
+            <td>
+                <t t-if="partner.type">
+                    <t t-esc="partner.type"/>
+                </t>
+                <i t-on-click.stop="trigger('show-reference-contact')"
+                   t-if="env.pos.db.partners_by_parent_id[partner.id] and env.pos.db.partners_by_parent_id[partner.id].length != 0"
+                   class="oe_link_icon fa fa-site-map oe_icon line-lot-icon"
+                   aria-label="Reference of Customer"
+                   role="img"
+                   title="Reference of Customer"
+                />
+                <i t-on-click.stop="trigger('activate-edit-mode', { isNewClient: true, parent_id: partner.id })"
+                   class="oe_link_icon fa fa-plus oe_icon line-lot-icon"
+                   aria-label="Add child Contact"
+                   role="img"
+                   title="Add child Contact"
+                />
+            </td>
+            <td>
+                <t t-esc="env.pos.format_currency_no_symbol(partner.pos_loyalty_point)"/>
+                <i t-on-click.stop="reChargePoints"
+                   t-if="env.pos.config.pos_loyalty_id"
+                   class="fa fa-gift"
+                   aria-label="ReCharge Points of Customer"
+                   role="img"
+                   title="ReCharge points of Customer"
+                />
+            </td>
+            <td>
+                <t t-esc="env.pos.format_currency(partner.balance)"/>
+            </td>
+            <td>
+                <t t-esc="env.pos.format_currency(partner.wallet)"/>
+            </td>
+            <td>
+                <t t-esc="env.pos.format_currency_no_symbol(partner.pos_order_count)"/>
+            </td>
+            <td>
+                <t t-esc="env.pos.format_currency(partner.pos_total_amount)"/>
+            </td>
+            <td t-if="env.pos.config.pos_orders_management">
+                <div class="with-badge"
+                     t-on-click.stop="showPurchasedHistories"
+                     t-att-badge="countOrdersByClient">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                </div>
+            </td>
+            <td t-if="env.pos.config.archive_client">
+                <i t-on-click.stop="archiveClient"
+                   class="oe_link_icon fa fa-trash oe_icon line-lot-icon"
+                   aria-label="Archive Customer"
+                   role="img"
+                   title="Archive Customer"
+                />
+            </td>
+        </tr>
+    </t>
+
+</templates>

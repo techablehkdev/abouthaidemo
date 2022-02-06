@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="pos_split_order_form" model="ir.ui.view">
+            <field name="name">Split Order Lines</field>
+            <field name="model">pos.split.order</field>
+            <field name="arch" type="xml">
+                <form string="Split Order Lines to new Order. Please remove items no need split">
+                    <footer>
+                        <group colspan="4">
+                            <field name="order_id" readonly="1" colspan="4"/>
+                            <field name="lines" colspan="4" nolabel="1"/>
+                        </group>
+                        <button name="splitOrders" class="oe_highlight" string="Split Order Lines Selected"
+                                confirm="Are you sure Split Order Lines selected to new Order ?"
+                                type="object"/>
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pos_split_order" model="ir.actions.act_window">
+            <field name="name">Split Order Lines</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.split.order</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="point_of_sale.model_pos_order" />
+            <field name="binding_view_types">form</field>
+        </record>
+
+    </data>
+</odoo>
